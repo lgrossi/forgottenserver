@@ -570,6 +570,8 @@ class LuaScriptInterface
 		static int luaPositionSendMagicEffect(lua_State* L);
 		static int luaPositionSendDistanceEffect(lua_State* L);
 
+		static int luaPositionGetIntersection(lua_State* L);
+
 		// Tile
 		static int luaTileCreate(lua_State* L);
 

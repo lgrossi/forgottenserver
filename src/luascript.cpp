@@ -2004,6 +2004,8 @@ void LuaScriptInterface::registerFunctions()
 	registerMethod("Position", "sendMagicEffect", LuaScriptInterface::luaPositionSendMagicEffect);
 	registerMethod("Position", "sendDistanceEffect", LuaScriptInterface::luaPositionSendDistanceEffect);
 
+	registerMethod("Position", "getIntersection", LuaScriptInterface::luaPositionGetIntersection);
+
 	// Tile
 	registerClass("Tile", "", LuaScriptInterface::luaTileCreate);
 	registerMetaMethod("Tile", "__eq", LuaScriptInterface::luaUserdataCompare);
@@ -4642,6 +4644,15 @@ int LuaScriptInterface::luaPositionSendDistanceEffect(lua_State* L)
 	}
 
 	pushBoolean(L, true);
+	return 1;
+}
+
+int LuaScriptInterface::luaPositionGetIntersection(lua_State* L)
+{
+	// creature:getIntersection()
+	const Position& positionEx = getPosition(L, 2);
+	const Position& position = getPosition(L, 1);
+	pushPosition(L, g_game.getSightBlocker(position, positionEx));
 	return 1;
 }
 

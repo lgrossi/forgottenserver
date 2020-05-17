@@ -3562,6 +3562,11 @@ bool Game::isSightClear(const Position& fromPos, const Position& toPos, bool flo
 	return map.isSightClear(fromPos, toPos, floorCheck);
 }
 
+const Position& Game::getSightBlocker(const Position& fromPos, const Position& toPos) const
+{
+	return *map.getSightBlocker(fromPos, toPos);
+}
+
 bool Game::internalCreatureTurn(Creature* creature, Direction dir)
 {
 	if (creature->getDirection() == dir) {
