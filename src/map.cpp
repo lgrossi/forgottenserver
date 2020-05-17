@@ -490,10 +490,10 @@ bool Map::canThrowObjectTo(const Position& fromPos, const Position& toPos, bool 
 	return isSightClear(fromPos, toPos, false);
 }
 
-bool Map::checkSightLine(const Position& fromPos, const Position& toPos) const
+const Position* Map::evaluateTwoPositions(const Position& fromPos, const Position& toPos, const Position* xyCallback (const Tile* tile), const Position* zCallback (const Tile* tile)) const
 {
 	if (fromPos == toPos) {
-		return true;
+		return nullptr;
 	}
 
 	Position start(fromPos.z > toPos.z ? toPos : fromPos);
@@ -520,22 +520,58 @@ bool Map::checkSightLine(const Position& fromPos, const Position& toPos) const
 		}
 
 		const Tile* tile = getTile(start.x, start.y, start.z);
-		if (tile && tile->hasProperty(CONST_PROP_BLOCKPROJECTILE)) {
-			return false;
-		}
+		const Position* pos = xyCallback(tile);
+		if (pos) {
+			return pos;
+		};
 	}
 
 	// now we need to perform a jump between floors to see if everything is clear (literally)
 	while (start.z != destination.z) {
 		const Tile* tile = getTile(start.x, start.y, start.z);
-		if (tile && tile->getThingCount() > 0) {
-			return false;
-		}
+		const Position* pos = zCallback(tile);
+		if (pos) {
+			return pos;
+		};
 
 		start.z++;
 	}
+	return nullptr;
+}
 
-	return true;
+bool Map::checkSightLine(const Position& fromPos, const Position& toPos) const
+{
+	auto xyCallback = [](const Tile* tile) -> const Position*
+	{
+		if (tile && tile->hasProperty(CONST_PROP_BLOCKPROJECTILE)) {
+			return &tile->getPosition();
+		}
+		return nullptr;
+	};
+	auto zCallback = [](const Tile* tile) -> const Position*
+	{
+		if (tile && tile->getThingCount() > 0) {
+			return &tile->getPosition();
+		}
+		return nullptr;
+	};
+	return !evaluateTwoPositions(fromPos, toPos, xyCallback, zCallback);
+}
+
+const Position* Map::getSightBlocker(const Position& fromPos, const Position& toPos) const
+{
+	auto xyCallback = [](const Tile* tile) -> const Position*
+	{
+		if (tile && (tile->hasProperty(CONST_PROP_BLOCKPROJECTILE))) {
+			return &tile->getPosition();
+		}
+		if (tile && tile->getCreatureCount() > 0) {
+			return &tile->getPosition();
+		}
+		return nullptr;
+	};
+	auto zCallback = [](const Tile* tile) -> const Position* { return nullptr; };
+	return evaluateTwoPositions(fromPos, toPos, xyCallback, zCallback);
 }
 
 bool Map::isSightClear(const Position& fromPos, const Position& toPos, bool floorCheck) const

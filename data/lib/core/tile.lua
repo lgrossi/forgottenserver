@@ -37,19 +37,61 @@ function Tile.relocateTo(self, toPosition)
 	return true
 end
 
-function Tile.isWalkable(self)
-	local ground = self:getGround()
-	if not ground or ground:hasProperty(CONST_PROP_BLOCKSOLID) then
+function Tile:hasGround()
+	return not self:getGround() and true or false
+end
+
+function Tile:hasAnyProperty(properties)
+	for _,v in ipairs(properties) do
+		if self:hasProperty(v) then
+			return true
+		end
+	end
+	return false
+end
+
+function Tile:hasAnyFlag(flags)
+	for _,v in ipairs(flags) do
+		if self:hasFlag(v) then
+			return true
+		end
+	end
+	return false
+end
+
+function Tile:isWalkable(pz, floorchange, block, creature)
+	if self:hasGround() then return false end
+	if creature and self:getCreatureCount() > 0 then return false end
+
+	if self:hasAnyProperty({CONST_PROP_BLOCKSOLID, CONST_PROP_BLOCKPROJECTILE}) then 
+		return false 
+	end
+
+	if pz and self:hasAnyFlag({TILESTATE_HOUSE, TILESTATE_PROTECTIONZONE}) then 
 		return false
 	end
 
-	local items = self:getItems()
-	for i = 1, self:getItemCount() do
-		local item = items[i]
-		local itemType = item:getType()
-		if itemType:getType() ~= ITEM_TYPE_MAGICFIELD and not itemType:isMovable() and item:hasProperty(CONST_PROP_BLOCKSOLID) then
-			return false
+	if floorchange and self:hasAnyFlag({TILESTATE_FLOORCHANGE}) then 
+		return false
+	end
+
+	if block then
+		local topStackItem = self:getTopTopItem()
+		if topStackItem and topStackItem:hasProperty(CONST_PROP_BLOCKPATH) then 
+			return false 
 		end
 	end
+
+	local items = self:getItems()
+	for _,item in ipairs(items) do
+		local itemType = item:getType()
+		if itemType:getType() ~= ITEM_TYPE_MAGICFIELD 
+			and not itemType:isMovable() 
+			and item:hasProperty(CONST_PROP_BLOCKSOLID) 
+		then 
+			return false 
+		end
+	end
+
 	return true
 end

@@ -18,6 +18,15 @@ function Position:getNextPosition(direction, steps)
 	end
 end
 
+function Position:getPosByDir(direction, steps)
+	local offset = Position.directionOffset[direction]
+	if offset then
+		steps = steps or 1
+		return Position(self.x + offset.x * steps, self.y + offset.y * steps, self.z)
+	end
+	return self
+end
+
 function Position:moveUpstairs()
 	local swap = function (lhs, rhs)
 		lhs.x, rhs.x = rhs.x, lhs.x
@@ -78,4 +87,38 @@ function Position:notifySummonAppear(summon)
 			spectator:addTarget(summon)
 		end
 	end
+end
+
+function Position:getPositionsAround()
+	local positions = {}
+	for i,v in ipairs(Position.directionOffset) do
+		positions[i] = Position(self.x + v.x, self.y + v.y, self.z)
+	end
+	return positions
+end
+
+function Position:getDirectionTo(toPos)
+	local dir = DIRECTION_NORTH
+	if (self.x > toPos.x) then
+		dir = DIRECTION_WEST
+		if(self.y > toPos.y) then
+				dir = DIRECTION_NORTHWEST
+		elseif(self.y < toPos.y) then
+				dir = DIRECTION_SOUTHWEST
+		end
+	elseif (self.x < toPos.x) then
+		dir = DIRECTION_EAST
+		if(self.y > toPos.y) then
+				dir = DIRECTION_NORTHEAST
+		elseif(self.y < toPos.y) then
+				dir = DIRECTION_SOUTHEAST
+		end
+	else
+		if (self.y > toPos.y) then
+			dir = DIRECTION_NORTH
+		elseif(self.y < toPos.y) then
+			dir = DIRECTION_SOUTH
+		end
+	end
+	return dir
 end

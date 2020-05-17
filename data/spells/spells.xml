@@ -31,9 +31,13 @@
 		<vocation name="Sorcerer" />
 		<vocation name="Master Sorcerer" />
 	</instant>
-	<instant group="attack" spellid="87" name="Death Strike" words="exori mort" level="16" mana="20" premium="1" range="3" casterTargetOrDirection="1" blockwalls="1" cooldown="2000" groupcooldown="2000" needlearn="0" script="attack/death_strike.lua">
+	<instant group="attack" spellid="87" name="Death Strike" words="exori mort" level="16" mana="20" premium="1" range="30" blockwalls="0" cooldown="2000" groupcooldown="2000" needlearn="0" script="attack/death_strike.lua">
 		<vocation name="Sorcerer" />
 		<vocation name="Master Sorcerer" />
+	</instant>
+	<instant group="attack" spellid="170" name="Energy Grab" words="exori grab vis" lvl="40" mana="20" premium="1" range="5" blockwalls="0" cooldown="2000" groupcooldown="2000" needlearn="0" script="attack/energy_grab.lua">
+		<vocation id="3"/>
+		<vocation id="7"/>
 	</instant>
 	<instant group="attack" spellid="124" name="Divine Caldera" words="exevo mas san" level="50" mana="160" premium="1" selftarget="1" cooldown="4000" groupcooldown="2000" needlearn="0" script="attack/divine_caldera.lua">
 		<vocation name="Paladin" />
