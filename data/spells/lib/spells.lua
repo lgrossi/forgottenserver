@@ -341,3 +341,36 @@ function Creature:addAttributeCondition(parameters)
 
 	self:addCondition(condition)
 end
+
+function Creature:setSpellTarget(variant, range)
+	local target = self:getTarget()
+	local creaturePos = self:getPosition()
+
+  if not target then
+    self:sendCancelMessage("Please choose a target.")
+		creaturePos:sendMagicEffect(CONST_ME_POFF)
+    return false
+	end
+	
+  if creaturePos:getDistance(target:getPosition()) > range then
+    self:sendCancelMessage("Target is not reachable.")
+		creaturePos:sendMagicEffect(CONST_ME_POFF)
+    return false
+	end
+
+	local toPos = target:getPosition()
+	local interceptionPos = creaturePos:getIntersection(toPos)
+
+	local tile = Tile(interceptionPos)
+
+	variant.pos = interceptionPos
+
+	local thing = tile:getTopVisibleThing()
+	if thing then
+		variant.number = thing.uid
+	else
+		variant.number = false
+	end
+
+	return variant
+end
