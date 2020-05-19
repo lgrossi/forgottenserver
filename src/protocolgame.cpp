@@ -2308,9 +2308,6 @@ void ProtocolGame::sendFYIBox(const std::string& message)
 //tile
 void ProtocolGame::sendMapDescription(const Position& pos)
 {
-	// Sync client with default server range to avoid errors
-	sendAwareRange();
-	
 	NetworkMessage msg;
 	msg.addByte(0x64);
 	msg.addPosition(player->getPosition());
@@ -2457,6 +2454,11 @@ void ProtocolGame::sendAddCreature(const Creature* creature, const Position& pos
 
 	sendPendingStateEntered();
 	sendEnterWorld();
+
+	// if (isLogin) {
+	// 	// Sync client with default server range to avoid errors
+	// 	sendAwareRange();
+	// }
 	sendMapDescription(pos);
 
 	if (isLogin) {

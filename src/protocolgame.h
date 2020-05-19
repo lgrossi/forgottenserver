@@ -332,7 +332,7 @@ class ProtocolGame final : public Protocol
 		bool acceptPackets = false;
 
 		struct AwareRange {
-			int width = 34; // your default width, needs to be the same of the client
+			int width = 44; // your default width, needs to be the same of the client
 			int height = 26; // your default heigth, needs to be the same of the client
 
 			int left() const { return (width / 2) - 1; }
