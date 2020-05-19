@@ -302,8 +302,8 @@ class ProtocolGame final : public Protocol
 
 		//otclient
 		void parseExtendedOpcode(NetworkMessage& msg);
-		void parseChangeAwareRange(NetworkMessage& msg);
-		void updateAwareRange(int width, int height);
+		void parseChangeAwareRange(NetworkMessage& msg, bool skipSync);
+		void updateAwareRange(int width, int height, bool skipSync);
 		void sendAwareRange();
 
 		friend class Player;
@@ -332,8 +332,9 @@ class ProtocolGame final : public Protocol
 		bool acceptPackets = false;
 
 		struct AwareRange {
-			int width = 44; // your default width, needs to be the same of the client
-			int height = 26; // your default heigth, needs to be the same of the client
+			// your default width/heigth, kept same of non otc for compatibility
+			int width = 18; 
+			int height = 14;
 
 			int left() const { return (width / 2) - 1; }
 			int right() const { return width / 2; }

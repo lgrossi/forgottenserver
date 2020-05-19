@@ -306,6 +306,10 @@ void ProtocolGame::onRecvFirstMessage(NetworkMessage& msg)
 		disconnect();
 		return;
 	}
+	
+	if (operatingSystem >= CLIENTOS_MOBA_LINUX) {
+		parseChangeAwareRange(msg, true);
+	}
 
 	if (version < CLIENT_VERSION_MIN || version > CLIENT_VERSION_MAX) {
 		std::ostringstream ss;
@@ -421,7 +425,7 @@ void ProtocolGame::parsePacket(NetworkMessage& msg)
 		case 0x1D: addGameTask(&Game::playerReceivePingBack, player->getID()); break;
 		case 0x1E: addGameTask(&Game::playerReceivePing, player->getID()); break;
 		case 0x32: parseExtendedOpcode(msg); break; //otclient extended opcode
-		case 0x33: parseChangeAwareRange(msg); break;
+		case 0x33: parseChangeAwareRange(msg, false); break;
 		case 0x64: parseAutoWalk(msg); break;
 		case 0x65: addGameTask(&Game::playerMove, player->getID(), DIRECTION_NORTH); break;
 		case 0x66: addGameTask(&Game::playerMove, player->getID(), DIRECTION_EAST); break;
@@ -3102,22 +3106,24 @@ void ProtocolGame::parseExtendedOpcode(NetworkMessage& msg)
 	addGameTask(&Game::parsePlayerExtendedOpcode, player->getID(), opcode, buffer);
 }
 
-void ProtocolGame::parseChangeAwareRange(NetworkMessage& msg)
+void ProtocolGame::parseChangeAwareRange(NetworkMessage& msg, bool skipSync)
 {
-	// comes from g_game.changeMapAwareRange(31, 21) in modules/game_interface/interface.lua
+	// comes from g_game.changeMapAwareRange(31, 21) 
 	uint8_t width = msg.get<uint8_t>();
 	uint8_t height = msg.get<uint8_t>();
 
-	g_dispatcher.addTask(createTask(std::bind(&ProtocolGame::updateAwareRange, getThis(), width, height)));
+	g_dispatcher.addTask(createTask(std::bind(&ProtocolGame::updateAwareRange, getThis(), width, height, skipSync)));
 }
 
-void ProtocolGame::updateAwareRange(int width, int height)
+void ProtocolGame::updateAwareRange(int width, int height, bool skipSync)
 {
 	// If you want to change max awareRange, edit maxViewportX, maxViewportY, maxClientViewportX, maxClientViewportY in map.h
 	awareRange.width = std::min(Map::maxViewportX * 2 + 1, std::min(Map::maxClientViewportX * 2 + 2, width));
 	awareRange.height = std::min(Map::maxViewportY * 2 + 1, std::min(Map::maxClientViewportY * 2 + 2, height));
 
-	sendMapDescription(player->getPosition()); // refresh map
+	if (!skipSync) {
+		sendMapDescription(player->getPosition()); // refresh map
+	}
 }
 
 void ProtocolGame::sendAwareRange()
