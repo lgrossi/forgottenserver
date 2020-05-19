@@ -82,7 +82,7 @@ void Monster::removeList()
 
 bool Monster::canSee(const Position& pos) const
 {
-	return Creature::canSee(getPosition(), pos, 9, 9);
+	return Creature::canSee(getPosition(), pos, Map::maxViewportX, Map::maxViewportY);
 }
 
 bool Monster::canWalkOnFieldType(CombatType_t combatType) const
