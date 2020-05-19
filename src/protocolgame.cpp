@@ -2455,10 +2455,6 @@ void ProtocolGame::sendAddCreature(const Creature* creature, const Position& pos
 	sendPendingStateEntered();
 	sendEnterWorld();
 
-	// if (isLogin) {
-	// 	// Sync client with default server range to avoid errors
-	// 	sendAwareRange();
-	// }
 	sendMapDescription(pos);
 
 	if (isLogin) {
