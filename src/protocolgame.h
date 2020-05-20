@@ -301,8 +301,15 @@ class ProtocolGame final : public Protocol
 		void AddShopItem(NetworkMessage& msg, const ShopInfo& item);
 
 		//otclient
+		//parse
 		void parseExtendedOpcode(NetworkMessage& msg);
 		void parseChangeAwareRange(NetworkMessage& msg, bool skipSync);
+		void parseCameraUpdate(NetworkMessage& msg);
+
+		//send
+		void sendUpdatedCamera(Position& pos);
+
+		//utils
 		void updateAwareRange(int width, int height, bool skipSync);
 		void sendAwareRange();
 
