@@ -123,6 +123,8 @@ enum ItemParseAttributes_t {
 	ITEM_PARSE_LIFELEECHAMOUNT,
 	ITEM_PARSE_MANALEECHCHANCE,
 	ITEM_PARSE_MANALEECHAMOUNT,
+	ITEM_PARSE_MAGIC_CRITICALHITAMOUNT,
+	ITEM_PARSE_MAGIC_CRITICALHITCHANCE,
 	ITEM_PARSE_FIELDABSORBPERCENTENERGY,
 	ITEM_PARSE_FIELDABSORBPERCENTFIRE,
 	ITEM_PARSE_FIELDABSORBPERCENTPOISON,
@@ -350,6 +352,7 @@ class ItemType
 		uint8_t lightColor = 0;
 		uint8_t shootRange = 1;
 		int8_t hitChance = 0;
+		int8_t improveMagicDamage = 0;
 
 		bool forceUse = false;
 		bool forceSerialize = false;

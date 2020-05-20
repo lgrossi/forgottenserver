@@ -3778,6 +3778,10 @@
 		<attribute key="weight" value="8500" />
 		<attribute key="armor" value="17" />
 		<attribute key="slotType" value="body" />
+		<!-- <attribute key="criticalHitChance" value="100" />
+		<attribute key="criticalHitAmount" value="30" /> -->
+		<attribute key="magicCriticalHitChance" value="100" />
+		<attribute key="magicCriticalHitAmount" value="30" />
 	</item>
 	<item id="2473" article="a" name="viking helmet">
 		<attribute key="weight" value="3900" />

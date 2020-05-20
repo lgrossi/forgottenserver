@@ -773,6 +773,12 @@ std::string getSpecialSkillName(uint8_t skillid)
 		case SPECIALSKILL_MANALEECHAMOUNT:
 			return "mana points leech amount";
 
+		case SPECIALSKILL_MAGIC_CRITICALHITCHANCE:
+			return "magic critical hit chance";
+
+		case SPECIALSKILL_MAGIC_CRITICALHITAMOUNT:
+			return "magic critical hit amount";
+
 		default:
 			return "unknown";
 	}
