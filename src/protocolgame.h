@@ -302,6 +302,9 @@ class ProtocolGame final : public Protocol
 
 		//otclient
 		void parseExtendedOpcode(NetworkMessage& msg);
+		void parseChangeAwareRange(NetworkMessage& msg, bool skipSync);
+		void updateAwareRange(int width, int height, bool skipSync);
+		void sendAwareRange();
 
 		friend class Player;
 
@@ -316,9 +319,6 @@ class ProtocolGame final : public Protocol
 			g_dispatcher.addTask(createTask(delay, std::bind(function, &g_game, std::forward<Args>(args)...)));
 		}
 
-		int32_t rangex = Map::maxClientViewportX;
-		int32_t rangey = Map::maxClientViewportY;
-
 		std::unordered_set<uint32_t> knownCreatureSet;
 		Player* player = nullptr;
 
@@ -330,6 +330,17 @@ class ProtocolGame final : public Protocol
 
 		bool debugAssertSent = false;
 		bool acceptPackets = false;
+
+		struct AwareRange {
+			// your default width/heigth, kept same of non otc for compatibility
+			int width = 18; 
+			int height = 14;
+
+			int left() const { return (width / 2) - 1; }
+			int right() const { return width / 2; }
+			int top() const { return (height / 2) - 1; }
+			int bottom() const { return height / 2; }
+		} awareRange;
 };
 
 #endif
