@@ -691,6 +691,16 @@ bool ConditionAttributes::setParam(ConditionParam_t param, int32_t value)
 			return true;
 		}
 
+		case CONDITION_PARAM_SPECIALSKILL_MAGIC_CRITICALHITCHANCE: {
+			specialSkills[SPECIALSKILL_MAGIC_CRITICALHITCHANCE] = value;
+			return true;
+		}
+
+		case CONDITION_PARAM_SPECIALSKILL_MAGIC_CRITICALHITAMOUNT: {
+			specialSkills[SPECIALSKILL_MAGIC_CRITICALHITAMOUNT] = value;
+			return true;
+		}
+
 		default:
 			return ret;
 	}

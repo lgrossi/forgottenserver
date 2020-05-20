@@ -750,9 +750,9 @@ void Combat::doTargetCombat(Creature* caster, Creature* target, CombatDamage& da
 				damage.secondary.value /= 2;
 			}
 
-			Combat::checkCriticalHit(casterPlayer, damage);
 			Combat::checkLeech(casterPlayer, damage);
 		}
+		Combat::checkCriticalHit(casterPlayer, damage, false);
 	}
 
 	if (caster && target && params.distanceEffect != CONST_ANI_NONE) {
@@ -816,15 +816,7 @@ void Combat::doAreaCombat(Creature* caster, const Position& position, const Area
 	int32_t criticalSecondary = 0;
 	if (casterPlayer) {
 		Combat::checkLeech(casterPlayer, damage);
-		if (!damage.critical && damage.origin != ORIGIN_CONDITION && (damage.primary.value < 0 || damage.secondary.value < 0)) {
-			uint16_t chance = casterPlayer->getSpecialSkill(SPECIALSKILL_CRITICALHITCHANCE);
-			if (chance != 0 && uniform_random(1, 100) <= chance) {
-				uint16_t criticalHit = casterPlayer->getSpecialSkill(SPECIALSKILL_CRITICALHITAMOUNT);
-				criticalPrimary = std::round(damage.primary.value * (criticalHit / 100.));
-				criticalSecondary = std::round(damage.secondary.value * (criticalHit / 100.));
-				damage.critical = true;
-			}
-		}
+		Combat::checkCriticalHit(casterPlayer, damage, true);
 	}
 
 	uint32_t maxX = 0;
@@ -937,22 +929,25 @@ void Combat::doAreaCombat(Creature* caster, const Position& position, const Area
 	}
 }
 
-void Combat::checkCriticalHit(Player* caster, CombatDamage& damage)
+void Combat::checkCriticalHit(Player* caster, CombatDamage& damage, bool uniformRandom)
 {
 	if (damage.critical || damage.origin == ORIGIN_CONDITION) {
 		return;
 	}
 
-	if (damage.primary.value > 0 || damage.secondary.value > 0) {
-		return;
-	}
+	bool isSpell = damage.origin == ORIGIN_SPELL;
+	
+	uint8_t amountSkill = !isSpell ? SPECIALSKILL_CRITICALHITAMOUNT : SPECIALSKILL_MAGIC_CRITICALHITAMOUNT;
+	uint8_t chanceSkill = !isSpell ? SPECIALSKILL_CRITICALHITCHANCE : SPECIALSKILL_MAGIC_CRITICALHITCHANCE; 
 
-	uint16_t chance = caster->getSpecialSkill(SPECIALSKILL_CRITICALHITCHANCE);
-	uint16_t criticalHit = caster->getSpecialSkill(SPECIALSKILL_CRITICALHITAMOUNT);
-	if (criticalHit != 0 && chance != 0 && normal_random(1, 100) <= chance) {
+	int32_t random = (uniformRandom ? uniform_random : normal_random)(1, 100);
+
+	uint16_t chance = caster->getSpecialSkill(chanceSkill);
+	uint16_t criticalHit = caster->getSpecialSkill(amountSkill);
+	if (criticalHit != 0 && chance != 0 && random <= chance) {
 		damage.primary.value += std::round(damage.primary.value * (criticalHit / 100.));
 		damage.secondary.value += std::round(damage.secondary.value * (criticalHit / 100.));
-		damage.critical = true;
+		damage.critical = !isSpell;
 	}
 }
 
