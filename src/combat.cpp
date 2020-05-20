@@ -750,9 +750,9 @@ void Combat::doTargetCombat(Creature* caster, Creature* target, CombatDamage& da
 				damage.secondary.value /= 2;
 			}
 
-			Combat::checkCriticalHit(casterPlayer, damage, false);
 			Combat::checkLeech(casterPlayer, damage);
 		}
+		Combat::checkCriticalHit(casterPlayer, damage, false);
 	}
 
 	if (caster && target && params.distanceEffect != CONST_ANI_NONE) {
@@ -935,12 +935,8 @@ void Combat::checkCriticalHit(Player* caster, CombatDamage& damage, bool uniform
 		return;
 	}
 
-	if (damage.primary.value > 0 || damage.secondary.value > 0) {
-		return;
-	}
-
 	bool isSpell = damage.origin == ORIGIN_SPELL;
-
+	
 	uint8_t amountSkill = !isSpell ? SPECIALSKILL_CRITICALHITAMOUNT : SPECIALSKILL_MAGIC_CRITICALHITAMOUNT;
 	uint8_t chanceSkill = !isSpell ? SPECIALSKILL_CRITICALHITCHANCE : SPECIALSKILL_MAGIC_CRITICALHITCHANCE; 
 
