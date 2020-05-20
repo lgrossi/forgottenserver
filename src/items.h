@@ -352,7 +352,6 @@ class ItemType
 		uint8_t lightColor = 0;
 		uint8_t shootRange = 1;
 		int8_t hitChance = 0;
-		int8_t improveMagicDamage = 0;
 
 		bool forceUse = false;
 		bool forceSerialize = false;
