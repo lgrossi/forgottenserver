@@ -99,6 +99,8 @@ const std::unordered_map<std::string, ItemParseAttributes_t> ItemParseAttributes
 	{"lifeleechamount", ITEM_PARSE_LIFELEECHAMOUNT},
 	{"manaleechchance", ITEM_PARSE_MANALEECHCHANCE},
 	{"manaleechamount", ITEM_PARSE_MANALEECHAMOUNT},
+	{"magiccriticalhitamount", ITEM_PARSE_MAGIC_CRITICALHITAMOUNT},
+	{"magiccriticalhitchance", ITEM_PARSE_MAGIC_CRITICALHITCHANCE},
 	{"fieldabsorbpercentenergy", ITEM_PARSE_FIELDABSORBPERCENTENERGY},
 	{"fieldabsorbpercentfire", ITEM_PARSE_FIELDABSORBPERCENTFIRE},
 	{"fieldabsorbpercentpoison", ITEM_PARSE_FIELDABSORBPERCENTPOISON},
@@ -955,6 +957,16 @@ void Items::parseItemNode(const pugi::xml_node& itemNode, uint16_t id)
 
 				case ITEM_PARSE_LIFELEECHCHANCE: {
 					abilities.specialSkills[SPECIALSKILL_LIFELEECHCHANCE] = pugi::cast<int32_t>(valueAttribute.value());
+					break;
+				}
+
+				case 	ITEM_PARSE_MAGIC_CRITICALHITAMOUNT: {
+					abilities.specialSkills[SPECIALSKILL_MAGIC_CRITICALHITAMOUNT] = pugi::cast<int32_t>(valueAttribute.value());
+					break;
+				}
+
+				case ITEM_PARSE_MAGIC_CRITICALHITCHANCE: {
+					abilities.specialSkills[SPECIALSKILL_MAGIC_CRITICALHITCHANCE] = pugi::cast<int32_t>(valueAttribute.value());
 					break;
 				}
 
