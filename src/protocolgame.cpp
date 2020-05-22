@@ -2514,21 +2514,21 @@ void ProtocolGame::sendMoveCreature(const Creature* creature, const Position& ne
 
 			if (oldPos.y > newPos.y) { // north, for old x
 				msg.addByte(0x65);
-				msg.addPosition(oldPos);
+				msg.addPosition(newPos);
 				GetMapDescription(oldPos.x - awareRange.left(), newPos.y - awareRange.top(), newPos.z, awareRange.width, 1, msg);
 			} else if (oldPos.y < newPos.y) { // south, for old x
 				msg.addByte(0x67);
-				msg.addPosition(oldPos);
+				msg.addPosition(newPos);
 				GetMapDescription(oldPos.x - awareRange.left(), newPos.y + awareRange.bottom(), newPos.z, awareRange.width, 1, msg);
 			}
 
 			if (oldPos.x < newPos.x) { // east, [with new y]
 				msg.addByte(0x66);
-				msg.addPosition(oldPos);
+				msg.addPosition(newPos);
 				GetMapDescription(newPos.x + awareRange.right(), newPos.y - awareRange.top(), newPos.z, 1, awareRange.height, msg);
 			} else if (oldPos.x > newPos.x) { // west, [with new y]
 				msg.addByte(0x68);
-				msg.addPosition(oldPos);
+				msg.addPosition(newPos);
 				GetMapDescription(newPos.x - awareRange.left(), newPos.y - awareRange.top(), newPos.z, 1, awareRange.height, msg);
 			}
 			writeToOutputBuffer(msg);
@@ -3005,7 +3005,7 @@ void ProtocolGame::MoveUpCreature(NetworkMessage& msg, const Creature* creature,
 
 	//floor change up
 	msg.addByte(0xBE);
-	msg.addPosition(oldPos);
+	msg.addPosition(newPos);
 
 	//going to surface
 	if (newPos.z == 7) {
@@ -3036,12 +3036,12 @@ void ProtocolGame::MoveUpCreature(NetworkMessage& msg, const Creature* creature,
 	//moving up a floor up makes us out of sync
 	//west
 	msg.addByte(0x68);
-	msg.addPosition(oldPos);
+	msg.addPosition(newPos);
 	GetMapDescription(oldPos.x - awareRange.left(), oldPos.y - (awareRange.top() - 1), newPos.z, 1, awareRange.height, msg);
 
 	//north
 	msg.addByte(0x65);
-	msg.addPosition(oldPos);
+	msg.addPosition(newPos);
 	GetMapDescription(oldPos.x - awareRange.left(), oldPos.y - awareRange.top(), newPos.z, awareRange.width, 1, msg);
 }
 
@@ -3053,7 +3053,7 @@ void ProtocolGame::MoveDownCreature(NetworkMessage& msg, const Creature* creatur
 
 	//floor change down
 	msg.addByte(0xBF);
-	msg.addPosition(oldPos);
+	msg.addPosition(newPos);
 
 	//going from surface to underground
 	if (newPos.z == 8) {
@@ -3082,12 +3082,12 @@ void ProtocolGame::MoveDownCreature(NetworkMessage& msg, const Creature* creatur
 	//moving down a floor makes us out of sync
 	//east
 	msg.addByte(0x66);
-	msg.addPosition(oldPos);
+	msg.addPosition(newPos);
 	GetMapDescription(oldPos.x + awareRange.right(), oldPos.y - awareRange.bottom(), newPos.z, 1, awareRange.height, msg);
 
 	//south
 	msg.addByte(0x67);
-	msg.addPosition(oldPos);
+	msg.addPosition(newPos);
 	GetMapDescription(oldPos.x - awareRange.left(), oldPos.y + awareRange.bottom(), newPos.z, awareRange.width, 1, msg);
 }
 
