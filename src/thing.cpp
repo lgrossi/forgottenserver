@@ -22,21 +22,22 @@
 #include "thing.h"
 #include "tile.h"
 
-const Position& Thing::getPosition() const
+const Position &Thing::getPosition() const
 {
-	const Tile* tile = getTile();
-	if (!tile) {
+	const Tile *tile = getTile();
+	if (!tile)
+	{
 		return Tile::nullptr_tile.getPosition();
 	}
 	return tile->getPosition();
 }
 
-Tile* Thing::getTile()
+Tile *Thing::getTile()
 {
-	return dynamic_cast<Tile*>(this);
+	return dynamic_cast<Tile *>(this);
 }
 
-const Tile* Thing::getTile() const
+const Tile *Thing::getTile() const
 {
-	return dynamic_cast<const Tile*>(this);
+	return dynamic_cast<const Tile *>(this);
 }

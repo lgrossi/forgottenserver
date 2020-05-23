@@ -38,29 +38,27 @@
 #include "scheduler.h"
 #include "databasetasks.h"
 
-
 extern Scheduler g_scheduler;
 extern DatabaseTasks g_databaseTasks;
 extern Dispatcher g_dispatcher;
 
 extern ConfigManager g_config;
-extern Actions* g_actions;
+extern Actions *g_actions;
 extern Monsters g_monsters;
-extern TalkActions* g_talkActions;
-extern MoveEvents* g_moveEvents;
-extern Spells* g_spells;
-extern Weapons* g_weapons;
+extern TalkActions *g_talkActions;
+extern MoveEvents *g_moveEvents;
+extern Spells *g_spells;
+extern Weapons *g_weapons;
 extern Game g_game;
-extern CreatureEvents* g_creatureEvents;
-extern GlobalEvents* g_globalEvents;
-extern Events* g_events;
-extern Chat* g_chat;
+extern CreatureEvents *g_creatureEvents;
+extern GlobalEvents *g_globalEvents;
+extern Events *g_events;
+extern Chat *g_chat;
 extern LuaEnvironment g_luaEnvironment;
 
 using ErrorCode = boost::system::error_code;
 
-Signals::Signals(boost::asio::io_service& service) :
-	set(service)
+Signals::Signals(boost::asio::io_service &service) : set(service)
 {
 	set.add(SIGINT);
 	set.add(SIGTERM);
@@ -79,9 +77,10 @@ Signals::Signals(boost::asio::io_service& service) :
 
 void Signals::asyncWait()
 {
-	set.async_wait([this] (ErrorCode err, int signal) {
-		if (err) {
-			std::cerr << "Signal handling error: "  << err.message() << std::endl;
+	set.async_wait([this](ErrorCode err, int signal) {
+		if (err)
+		{
+			std::cerr << "Signal handling error: " << err.message() << std::endl;
 			return;
 		}
 		dispatchSignalHandler(signal);
@@ -94,31 +93,32 @@ void Signals::asyncWait()
 // https://github.com/otland/forgottenserver/pull/2473
 void Signals::dispatchSignalHandler(int signal)
 {
-	switch(signal) {
-		case SIGINT: //Shuts the server down
-			g_dispatcher.addTask(createTask(sigintHandler));
-			break;
-		case SIGTERM: //Shuts the server down
-			g_dispatcher.addTask(createTask(sigtermHandler));
-			break;
+	switch (signal)
+	{
+	case SIGINT: //Shuts the server down
+		g_dispatcher.addTask(createTask(sigintHandler));
+		break;
+	case SIGTERM: //Shuts the server down
+		g_dispatcher.addTask(createTask(sigtermHandler));
+		break;
 #ifndef _WIN32
-		case SIGHUP: //Reload config/data
-			g_dispatcher.addTask(createTask(sighupHandler));
-			break;
-		case SIGUSR1: //Saves game state
-			g_dispatcher.addTask(createTask(sigusr1Handler));
-			break;
+	case SIGHUP: //Reload config/data
+		g_dispatcher.addTask(createTask(sighupHandler));
+		break;
+	case SIGUSR1: //Saves game state
+		g_dispatcher.addTask(createTask(sigusr1Handler));
+		break;
 #else
-		case SIGBREAK: //Shuts the server down
-			g_dispatcher.addTask(createTask(sigbreakHandler));
-			// hold the thread until other threads end
-			g_scheduler.join();
-			g_databaseTasks.join();
-			g_dispatcher.join();
-			break;
+	case SIGBREAK: //Shuts the server down
+		g_dispatcher.addTask(createTask(sigbreakHandler));
+		// hold the thread until other threads end
+		g_scheduler.join();
+		g_databaseTasks.join();
+		g_dispatcher.join();
+		break;
 #endif
-		default:
-			break;
+	default:
+		break;
 	}
 }
 

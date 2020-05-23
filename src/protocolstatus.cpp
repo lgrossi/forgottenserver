@@ -30,7 +30,8 @@ extern Game g_game;
 std::map<uint32_t, int64_t> ProtocolStatus::ipConnectMap;
 const uint64_t ProtocolStatus::start = OTSYS_TIME();
 
-enum RequestedInfo_t : uint16_t {
+enum RequestedInfo_t : uint16_t
+{
 	REQUEST_BASIC_SERVER_INFO = 1 << 0,
 	REQUEST_OWNER_SERVER_INFO = 1 << 1,
 	REQUEST_MISC_SERVER_INFO = 1 << 2,
@@ -41,14 +42,17 @@ enum RequestedInfo_t : uint16_t {
 	REQUEST_SERVER_SOFTWARE_INFO = 1 << 7,
 };
 
-void ProtocolStatus::onRecvFirstMessage(NetworkMessage& msg)
+void ProtocolStatus::onRecvFirstMessage(NetworkMessage &msg)
 {
 	uint32_t ip = getIP();
-	if (ip != 0x0100007F) {
+	if (ip != 0x0100007F)
+	{
 		std::string ipStr = convertIPToString(ip);
-		if (ipStr != g_config.getString(ConfigManager::IP)) {
+		if (ipStr != g_config.getString(ConfigManager::IP))
+		{
 			std::map<uint32_t, int64_t>::const_iterator it = ipConnectMap.find(ip);
-			if (it != ipConnectMap.end() && (OTSYS_TIME() < (it->second + g_config.getNumber(ConfigManager::STATUSQUERY_TIMEOUT)))) {
+			if (it != ipConnectMap.end() && (OTSYS_TIME() < (it->second + g_config.getNumber(ConfigManager::STATUSQUERY_TIMEOUT))))
+			{
 				disconnect();
 				return;
 			}
@@ -57,31 +61,36 @@ void ProtocolStatus::onRecvFirstMessage(NetworkMessage& msg)
 
 	ipConnectMap[ip] = OTSYS_TIME();
 
-	switch (msg.getByte()) {
-		//XML info protocol
-		case 0xFF: {
-			if (msg.getString(4) == "info") {
-				g_dispatcher.addTask(createTask(std::bind(&ProtocolStatus::sendStatusString,
-									  std::static_pointer_cast<ProtocolStatus>(shared_from_this()))));
-				return;
-			}
-			break;
-		}
-
-		//Another ServerInfo protocol
-		case 0x01: {
-			uint16_t requestedInfo = msg.get<uint16_t>(); // only a Byte is necessary, though we could add new info here
-			std::string characterName;
-			if (requestedInfo & REQUEST_PLAYER_STATUS_INFO) {
-				characterName = msg.getString();
-			}
-			g_dispatcher.addTask(createTask(std::bind(&ProtocolStatus::sendInfo, std::static_pointer_cast<ProtocolStatus>(shared_from_this()),
-								  requestedInfo, characterName)));
+	switch (msg.getByte())
+	{
+	//XML info protocol
+	case 0xFF:
+	{
+		if (msg.getString(4) == "info")
+		{
+			g_dispatcher.addTask(createTask(std::bind(&ProtocolStatus::sendStatusString,
+																								std::static_pointer_cast<ProtocolStatus>(shared_from_this()))));
 			return;
 		}
+		break;
+	}
 
-		default:
-			break;
+	//Another ServerInfo protocol
+	case 0x01:
+	{
+		uint16_t requestedInfo = msg.get<uint16_t>(); // only a Byte is necessary, though we could add new info here
+		std::string characterName;
+		if (requestedInfo & REQUEST_PLAYER_STATUS_INFO)
+		{
+			characterName = msg.getString();
+		}
+		g_dispatcher.addTask(createTask(std::bind(&ProtocolStatus::sendInfo, std::static_pointer_cast<ProtocolStatus>(shared_from_this()),
+																							requestedInfo, characterName)));
+		return;
+	}
+
+	default:
+		break;
 	}
 	disconnect();
 }
@@ -155,24 +164,27 @@ void ProtocolStatus::sendStatusString()
 	disconnect();
 }
 
-void ProtocolStatus::sendInfo(uint16_t requestedInfo, const std::string& characterName)
+void ProtocolStatus::sendInfo(uint16_t requestedInfo, const std::string &characterName)
 {
 	auto output = OutputMessagePool::getOutputMessage();
 
-	if (requestedInfo & REQUEST_BASIC_SERVER_INFO) {
+	if (requestedInfo & REQUEST_BASIC_SERVER_INFO)
+	{
 		output->addByte(0x10);
 		output->addString(g_config.getString(ConfigManager::SERVER_NAME));
 		output->addString(g_config.getString(ConfigManager::IP));
 		output->addString(std::to_string(g_config.getNumber(ConfigManager::LOGIN_PORT)));
 	}
 
-	if (requestedInfo & REQUEST_OWNER_SERVER_INFO) {
+	if (requestedInfo & REQUEST_OWNER_SERVER_INFO)
+	{
 		output->addByte(0x11);
 		output->addString(g_config.getString(ConfigManager::OWNER_NAME));
 		output->addString(g_config.getString(ConfigManager::OWNER_EMAIL));
 	}
 
-	if (requestedInfo & REQUEST_MISC_SERVER_INFO) {
+	if (requestedInfo & REQUEST_MISC_SERVER_INFO)
+	{
 		output->addByte(0x12);
 		output->addString(g_config.getString(ConfigManager::MOTD));
 		output->addString(g_config.getString(ConfigManager::LOCATION));
@@ -180,14 +192,16 @@ void ProtocolStatus::sendInfo(uint16_t requestedInfo, const std::string& charact
 		output->add<uint64_t>((OTSYS_TIME() - ProtocolStatus::start) / 1000);
 	}
 
-	if (requestedInfo & REQUEST_PLAYERS_INFO) {
+	if (requestedInfo & REQUEST_PLAYERS_INFO)
+	{
 		output->addByte(0x20);
 		output->add<uint32_t>(g_game.getPlayersOnline());
 		output->add<uint32_t>(g_config.getNumber(ConfigManager::MAX_PLAYERS));
 		output->add<uint32_t>(g_game.getPlayersRecord());
 	}
 
-	if (requestedInfo & REQUEST_MAP_INFO) {
+	if (requestedInfo & REQUEST_MAP_INFO)
+	{
 		output->addByte(0x30);
 		output->addString(g_config.getString(ConfigManager::MAP_NAME));
 		output->addString(g_config.getString(ConfigManager::MAP_AUTHOR));
@@ -197,27 +211,34 @@ void ProtocolStatus::sendInfo(uint16_t requestedInfo, const std::string& charact
 		output->add<uint16_t>(mapHeight);
 	}
 
-	if (requestedInfo & REQUEST_EXT_PLAYERS_INFO) {
+	if (requestedInfo & REQUEST_EXT_PLAYERS_INFO)
+	{
 		output->addByte(0x21); // players info - online players list
 
-		const auto& players = g_game.getPlayers();
+		const auto &players = g_game.getPlayers();
 		output->add<uint32_t>(players.size());
-		for (const auto& it : players) {
+		for (const auto &it : players)
+		{
 			output->addString(it.second->getName());
 			output->add<uint32_t>(it.second->getLevel());
 		}
 	}
 
-	if (requestedInfo & REQUEST_PLAYER_STATUS_INFO) {
+	if (requestedInfo & REQUEST_PLAYER_STATUS_INFO)
+	{
 		output->addByte(0x22); // players info - online status info of a player
-		if (g_game.getPlayerByName(characterName) != nullptr) {
+		if (g_game.getPlayerByName(characterName) != nullptr)
+		{
 			output->addByte(0x01);
-		} else {
+		}
+		else
+		{
 			output->addByte(0x00);
 		}
 	}
 
-	if (requestedInfo & REQUEST_SERVER_SOFTWARE_INFO) {
+	if (requestedInfo & REQUEST_SERVER_SOFTWARE_INFO)
+	{
 		output->addByte(0x23); // server software info
 		output->addString(STATUS_SERVER_NAME);
 		output->addString(STATUS_SERVER_VERSION);

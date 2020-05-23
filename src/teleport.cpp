@@ -24,10 +24,12 @@
 
 extern Game g_game;
 
-Attr_ReadValue Teleport::readAttr(AttrTypes_t attr, PropStream& propStream)
+Attr_ReadValue Teleport::readAttr(AttrTypes_t attr, PropStream &propStream)
 {
-	if (attr == ATTR_TELE_DEST) {
-		if (!propStream.read<uint16_t>(destPos.x) || !propStream.read<uint16_t>(destPos.y) || !propStream.read<uint8_t>(destPos.z)) {
+	if (attr == ATTR_TELE_DEST)
+	{
+		if (!propStream.read<uint16_t>(destPos.x) || !propStream.read<uint16_t>(destPos.y) || !propStream.read<uint8_t>(destPos.z))
+		{
 			return ATTR_READ_ERROR;
 		}
 		return ATTR_READ_CONTINUE;
@@ -35,7 +37,7 @@ Attr_ReadValue Teleport::readAttr(AttrTypes_t attr, PropStream& propStream)
 	return Item::readAttr(attr, propStream);
 }
 
-void Teleport::serializeAttr(PropWriteStream& propWriteStream) const
+void Teleport::serializeAttr(PropWriteStream &propWriteStream) const
 {
 	Item::serializeAttr(propWriteStream);
 
@@ -45,40 +47,43 @@ void Teleport::serializeAttr(PropWriteStream& propWriteStream) const
 	propWriteStream.write<uint8_t>(destPos.z);
 }
 
-ReturnValue Teleport::queryAdd(int32_t, const Thing&, uint32_t, uint32_t, Creature*) const
+ReturnValue Teleport::queryAdd(int32_t, const Thing &, uint32_t, uint32_t, Creature *) const
 {
 	return RETURNVALUE_NOTPOSSIBLE;
 }
 
-ReturnValue Teleport::queryMaxCount(int32_t, const Thing&, uint32_t, uint32_t&, uint32_t) const
+ReturnValue Teleport::queryMaxCount(int32_t, const Thing &, uint32_t, uint32_t &, uint32_t) const
 {
 	return RETURNVALUE_NOTPOSSIBLE;
 }
 
-ReturnValue Teleport::queryRemove(const Thing&, uint32_t, uint32_t) const
+ReturnValue Teleport::queryRemove(const Thing &, uint32_t, uint32_t) const
 {
 	return RETURNVALUE_NOERROR;
 }
 
-Cylinder* Teleport::queryDestination(int32_t&, const Thing&, Item**, uint32_t&)
+Cylinder *Teleport::queryDestination(int32_t &, const Thing &, Item **, uint32_t &)
 {
 	return this;
 }
 
-void Teleport::addThing(Thing* thing)
+void Teleport::addThing(Thing *thing)
 {
 	return addThing(0, thing);
 }
 
-bool Teleport::checkInfinityLoop(Tile* destTile)
+bool Teleport::checkInfinityLoop(Tile *destTile)
 {
-	if (!destTile) {
+	if (!destTile)
+	{
 		return false;
 	}
 
-	if (Teleport* teleport = destTile->getTeleportItem()) {
-		const Position& nextDestPos = teleport->getDestPos();
-		if (getPosition() == nextDestPos) {
+	if (Teleport *teleport = destTile->getTeleportItem())
+	{
+		const Position &nextDestPos = teleport->getDestPos();
+		if (getPosition() == nextDestPos)
+		{
 			return true;
 		}
 		return checkInfinityLoop(g_game.map.getTile(nextDestPos));
@@ -86,32 +91,39 @@ bool Teleport::checkInfinityLoop(Tile* destTile)
 	return false;
 }
 
-void Teleport::addThing(int32_t, Thing* thing)
+void Teleport::addThing(int32_t, Thing *thing)
 {
-	Tile* destTile = g_game.map.getTile(destPos);
-	if (!destTile) {
+	Tile *destTile = g_game.map.getTile(destPos);
+	if (!destTile)
+	{
 		return;
 	}
 
 	// Prevent infinity loop
-	if (checkInfinityLoop(destTile)) {
-		const Position& pos = getPosition();
+	if (checkInfinityLoop(destTile))
+	{
+		const Position &pos = getPosition();
 		std::cout << "Warning: infinity loop teleport. " << pos << std::endl;
 		return;
 	}
 
 	const MagicEffectClasses effect = Item::items[id].magicEffect;
 
-	if (Creature* creature = thing->getCreature()) {
+	if (Creature *creature = thing->getCreature())
+	{
 		Position origPos = creature->getPosition();
 		g_game.internalCreatureTurn(creature, origPos.x > destPos.x ? DIRECTION_WEST : DIRECTION_EAST);
 		g_game.map.moveCreature(*creature, *destTile);
-		if (effect != CONST_ME_NONE) {
+		if (effect != CONST_ME_NONE)
+		{
 			g_game.addMagicEffect(origPos, effect);
 			g_game.addMagicEffect(destTile->getPosition(), effect);
 		}
-	} else if (Item* item = thing->getItem()) {
-		if (effect != CONST_ME_NONE) {
+	}
+	else if (Item *item = thing->getItem())
+	{
+		if (effect != CONST_ME_NONE)
+		{
 			g_game.addMagicEffect(destTile->getPosition(), effect);
 			g_game.addMagicEffect(item->getPosition(), effect);
 		}
@@ -119,27 +131,27 @@ void Teleport::addThing(int32_t, Thing* thing)
 	}
 }
 
-void Teleport::updateThing(Thing*, uint16_t, uint32_t)
+void Teleport::updateThing(Thing *, uint16_t, uint32_t)
 {
 	//
 }
 
-void Teleport::replaceThing(uint32_t, Thing*)
+void Teleport::replaceThing(uint32_t, Thing *)
 {
 	//
 }
 
-void Teleport::removeThing(Thing*, uint32_t)
+void Teleport::removeThing(Thing *, uint32_t)
 {
 	//
 }
 
-void Teleport::postAddNotification(Thing* thing, const Cylinder* oldParent, int32_t index, cylinderlink_t)
+void Teleport::postAddNotification(Thing *thing, const Cylinder *oldParent, int32_t index, cylinderlink_t)
 {
 	getParent()->postAddNotification(thing, oldParent, index, LINK_PARENT);
 }
 
-void Teleport::postRemoveNotification(Thing* thing, const Cylinder* newParent, int32_t index, cylinderlink_t)
+void Teleport::postRemoveNotification(Thing *thing, const Cylinder *newParent, int32_t index, cylinderlink_t)
 {
 	getParent()->postRemoveNotification(thing, newParent, index, LINK_PARENT);
 }
