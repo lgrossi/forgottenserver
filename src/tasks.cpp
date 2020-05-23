@@ -24,12 +24,12 @@
 
 extern Game g_game;
 
-Task* createTask(std::function<void (void)> f)
+Task *createTask(std::function<void(void)> f)
 {
 	return new Task(std::move(f));
 }
 
-Task* createTask(uint32_t expiration, std::function<void (void)> f)
+Task *createTask(uint32_t expiration, std::function<void(void)> f)
 {
 	return new Task(expiration, std::move(f));
 }
@@ -39,62 +39,75 @@ void Dispatcher::threadMain()
 	// NOTE: second argument defer_lock is to prevent from immediate locking
 	std::unique_lock<std::mutex> taskLockUnique(taskLock, std::defer_lock);
 
-	while (getState() != THREAD_STATE_TERMINATED) {
+	while (getState() != THREAD_STATE_TERMINATED)
+	{
 		// check if there are tasks waiting
 		taskLockUnique.lock();
 
-		if (taskList.empty()) {
+		if (taskList.empty())
+		{
 			//if the list is empty wait for signal
 			taskSignal.wait(taskLockUnique);
 		}
 
-		if (!taskList.empty()) {
+		if (!taskList.empty())
+		{
 			// take the first task
-			Task* task = taskList.front();
+			Task *task = taskList.front();
 			taskList.pop_front();
 			taskLockUnique.unlock();
 
-			if (!task->hasExpired()) {
+			if (!task->hasExpired())
+			{
 				++dispatcherCycle;
 				// execute it
 				(*task)();
 			}
 			delete task;
-		} else {
+		}
+		else
+		{
 			taskLockUnique.unlock();
 		}
 	}
 }
 
-void Dispatcher::addTask(Task* task, bool push_front /*= false*/)
+void Dispatcher::addTask(Task *task, bool push_front /*= false*/)
 {
 	bool do_signal = false;
 
 	taskLock.lock();
 
-	if (getState() == THREAD_STATE_RUNNING) {
+	if (getState() == THREAD_STATE_RUNNING)
+	{
 		do_signal = taskList.empty();
 
-		if (push_front) {
+		if (push_front)
+		{
 			taskList.push_front(task);
-		} else {
+		}
+		else
+		{
 			taskList.push_back(task);
 		}
-	} else {
+	}
+	else
+	{
 		delete task;
 	}
 
 	taskLock.unlock();
 
 	// send a signal if the list was empty
-	if (do_signal) {
+	if (do_signal)
+	{
 		taskSignal.notify_one();
 	}
 }
 
 void Dispatcher::shutdown()
 {
-	Task* task = createTask([this]() {
+	Task *task = createTask([this]() {
 		setState(THREAD_STATE_TERMINATED);
 		taskSignal.notify_one();
 	});

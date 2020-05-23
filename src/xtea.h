@@ -20,12 +20,13 @@
 #ifndef TFS_XTEA_H
 #define TFS_XTEA_H
 
-namespace xtea {
+namespace xtea
+{
 
-using key = std::array<uint32_t, 4>;
+  using key = std::array<uint32_t, 4>;
 
-void encrypt(uint8_t* data, size_t length, const key& k);
-void decrypt(uint8_t* data, size_t length, const key& k);
+  void encrypt(uint8_t *data, size_t length, const key &k);
+  void decrypt(uint8_t *data, size_t length, const key &k);
 
 } // namespace xtea
 
