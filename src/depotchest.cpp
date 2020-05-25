@@ -22,41 +22,34 @@
 #include "depotchest.h"
 #include "tools.h"
 
-DepotChest::DepotChest(uint16_t type) : Container(type), maxDepotItems(1500) {}
+DepotChest::DepotChest(uint16_t type) :
+	Container(type), maxDepotItems(1500) {}
 
-ReturnValue DepotChest::queryAdd(int32_t index, const Thing &thing, uint32_t count,
-																 uint32_t flags, Creature *actor /* = nullptr*/) const
+ReturnValue DepotChest::queryAdd(int32_t index, const Thing& thing, uint32_t count,
+		uint32_t flags, Creature* actor/* = nullptr*/) const
 {
-	const Item *item = thing.getItem();
-	if (item == nullptr)
-	{
+	const Item* item = thing.getItem();
+	if (item == nullptr) {
 		return RETURNVALUE_NOTPOSSIBLE;
 	}
 
 	bool skipLimit = hasBitSet(FLAG_NOLIMIT, flags);
-	if (!skipLimit)
-	{
+	if (!skipLimit) {
 		int32_t addCount = 0;
 
-		if ((item->isStackable() && item->getItemCount() != count))
-		{
+		if ((item->isStackable() && item->getItemCount() != count)) {
 			addCount = 1;
 		}
 
-		if (item->getTopParent() != this)
-		{
-			if (const Container *container = item->getContainer())
-			{
+		if (item->getTopParent() != this) {
+			if (const Container* container = item->getContainer()) {
 				addCount = container->getItemHoldingCount() + 1;
-			}
-			else
-			{
+			} else {
 				addCount = 1;
 			}
 		}
 
-		if (getItemHoldingCount() + addCount > maxDepotItems)
-		{
+		if (getItemHoldingCount() + addCount > maxDepotItems) {
 			return RETURNVALUE_DEPOTISFULL;
 		}
 	}
@@ -64,28 +57,25 @@ ReturnValue DepotChest::queryAdd(int32_t index, const Thing &thing, uint32_t cou
 	return Container::queryAdd(index, thing, count, flags, actor);
 }
 
-void DepotChest::postAddNotification(Thing *thing, const Cylinder *oldParent, int32_t index, cylinderlink_t)
+void DepotChest::postAddNotification(Thing* thing, const Cylinder* oldParent, int32_t index, cylinderlink_t)
 {
-	Cylinder *parent = getParent();
-	if (parent != nullptr)
-	{
+	Cylinder* parent = getParent();
+	if (parent != nullptr) {
 		parent->postAddNotification(thing, oldParent, index, LINK_PARENT);
 	}
 }
 
-void DepotChest::postRemoveNotification(Thing *thing, const Cylinder *newParent, int32_t index, cylinderlink_t)
+void DepotChest::postRemoveNotification(Thing* thing, const Cylinder* newParent, int32_t index, cylinderlink_t)
 {
-	Cylinder *parent = getParent();
-	if (parent != nullptr)
-	{
+	Cylinder* parent = getParent();
+	if (parent != nullptr) {
 		parent->postRemoveNotification(thing, newParent, index, LINK_PARENT);
 	}
 }
 
-Cylinder *DepotChest::getParent() const
+Cylinder* DepotChest::getParent() const
 {
-	if (parent)
-	{
+	if (parent) {
 		return parent->getParent();
 	}
 	return nullptr;

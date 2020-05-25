@@ -22,7 +22,8 @@
 
 struct Mount
 {
-	Mount(uint8_t id, uint16_t clientId, std::string name, int32_t speed, bool premium) : name(std::move(name)), speed(speed), clientId(clientId), id(id), premium(premium) {}
+	Mount(uint8_t id, uint16_t clientId, std::string name, int32_t speed, bool premium) :
+		name(std::move(name)), speed(speed), clientId(clientId), id(id), premium(premium) {}
 
 	std::string name;
 	int32_t speed;
@@ -33,20 +34,19 @@ struct Mount
 
 class Mounts
 {
-public:
-	bool reload();
-	bool loadFromXml();
-	Mount *getMountByID(uint8_t id);
-	Mount *getMountByName(const std::string &name);
-	Mount *getMountByClientID(uint16_t clientId);
+	public:
+		bool reload();
+		bool loadFromXml();
+		Mount* getMountByID(uint8_t id);
+		Mount* getMountByName(const std::string& name);
+		Mount* getMountByClientID(uint16_t clientId);
 
-	const std::vector<Mount> &getMounts() const
-	{
-		return mounts;
-	}
+		const std::vector<Mount>& getMounts() const {
+			return mounts;
+		}
 
-private:
-	std::vector<Mount> mounts;
+	private:
+		std::vector<Mount> mounts;
 };
 
 #endif

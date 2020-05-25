@@ -31,16 +31,16 @@
 #include "events.h"
 #include "script.h"
 
-Actions *g_actions = nullptr;
-CreatureEvents *g_creatureEvents = nullptr;
-Chat *g_chat = nullptr;
-Events *g_events = nullptr;
-GlobalEvents *g_globalEvents = nullptr;
-Spells *g_spells = nullptr;
-TalkActions *g_talkActions = nullptr;
-MoveEvents *g_moveEvents = nullptr;
-Weapons *g_weapons = nullptr;
-Scripts *g_scripts = nullptr;
+Actions* g_actions = nullptr;
+CreatureEvents* g_creatureEvents = nullptr;
+Chat* g_chat = nullptr;
+Events* g_events = nullptr;
+GlobalEvents* g_globalEvents = nullptr;
+Spells* g_spells = nullptr;
+TalkActions* g_talkActions = nullptr;
+MoveEvents* g_moveEvents = nullptr;
+Weapons* g_weapons = nullptr;
+Scripts* g_scripts = nullptr;
 
 extern LuaEnvironment g_luaEnvironment;
 
@@ -60,15 +60,13 @@ ScriptingManager::~ScriptingManager()
 
 bool ScriptingManager::loadScriptSystems()
 {
-	if (g_luaEnvironment.loadFile("data/global.lua") == -1)
-	{
+	if (g_luaEnvironment.loadFile("data/global.lua") == -1) {
 		std::cout << "[Warning - ScriptingManager::loadScriptSystems] Can not load data/global.lua" << std::endl;
 	}
 
 	g_scripts = new Scripts();
 	std::cout << ">> Loading lua libs" << std::endl;
-	if (!g_scripts->loadScripts("scripts/lib", true, false))
-	{
+	if (!g_scripts->loadScripts("scripts/lib", true, false)) {
 		std::cout << "> ERROR: Unable to load lua libs!" << std::endl;
 		return false;
 	}
@@ -76,8 +74,7 @@ bool ScriptingManager::loadScriptSystems()
 	g_chat = new Chat();
 
 	g_weapons = new Weapons();
-	if (!g_weapons->loadFromXml())
-	{
+	if (!g_weapons->loadFromXml()) {
 		std::cout << "> ERROR: Unable to load weapons!" << std::endl;
 		return false;
 	}
@@ -85,50 +82,43 @@ bool ScriptingManager::loadScriptSystems()
 	g_weapons->loadDefaults();
 
 	g_spells = new Spells();
-	if (!g_spells->loadFromXml())
-	{
+	if (!g_spells->loadFromXml()) {
 		std::cout << "> ERROR: Unable to load spells!" << std::endl;
 		return false;
 	}
 
 	g_actions = new Actions();
-	if (!g_actions->loadFromXml())
-	{
+	if (!g_actions->loadFromXml()) {
 		std::cout << "> ERROR: Unable to load actions!" << std::endl;
 		return false;
 	}
 
 	g_talkActions = new TalkActions();
-	if (!g_talkActions->loadFromXml())
-	{
+	if (!g_talkActions->loadFromXml()) {
 		std::cout << "> ERROR: Unable to load talk actions!" << std::endl;
 		return false;
 	}
 
 	g_moveEvents = new MoveEvents();
-	if (!g_moveEvents->loadFromXml())
-	{
+	if (!g_moveEvents->loadFromXml()) {
 		std::cout << "> ERROR: Unable to load move events!" << std::endl;
 		return false;
 	}
 
 	g_creatureEvents = new CreatureEvents();
-	if (!g_creatureEvents->loadFromXml())
-	{
+	if (!g_creatureEvents->loadFromXml()) {
 		std::cout << "> ERROR: Unable to load creature events!" << std::endl;
 		return false;
 	}
 
 	g_globalEvents = new GlobalEvents();
-	if (!g_globalEvents->loadFromXml())
-	{
+	if (!g_globalEvents->loadFromXml()) {
 		std::cout << "> ERROR: Unable to load global events!" << std::endl;
 		return false;
 	}
 
 	g_events = new Events();
-	if (!g_events->load())
-	{
+	if (!g_events->load()) {
 		std::cout << "> ERROR: Unable to load events!" << std::endl;
 		return false;
 	}

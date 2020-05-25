@@ -25,9 +25,9 @@
 #include "database.h"
 #include "enums.h"
 
-struct DatabaseTask
-{
-	DatabaseTask(std::string &&query, std::function<void(DBResult_ptr, bool)> &&callback, bool store) : query(std::move(query)), callback(std::move(callback)), store(store) {}
+struct DatabaseTask {
+	DatabaseTask(std::string&& query, std::function<void(DBResult_ptr, bool)>&& callback, bool store) :
+		query(std::move(query)), callback(std::move(callback)), store(store) {}
 
 	std::string query;
 	std::function<void(DBResult_ptr, bool)> callback;
@@ -36,24 +36,23 @@ struct DatabaseTask
 
 class DatabaseTasks : public ThreadHolder<DatabaseTasks>
 {
-public:
-	DatabaseTasks() = default;
-	void start();
-	void flush();
-	void shutdown();
+	public:
+		DatabaseTasks() = default;
+		void start();
+		void flush();
+		void shutdown();
 
-	void addTask(std::string query, std::function<void(DBResult_ptr, bool)> callback = nullptr, bool store = false);
+		void addTask(std::string query, std::function<void(DBResult_ptr, bool)> callback = nullptr, bool store = false);
 
-	void threadMain();
+		void threadMain();
+	private:
+		void runTask(const DatabaseTask& task);
 
-private:
-	void runTask(const DatabaseTask &task);
-
-	Database db;
-	std::thread thread;
-	std::list<DatabaseTask> tasks;
-	std::mutex taskLock;
-	std::condition_variable taskSignal;
+		Database db;
+		std::thread thread;
+		std::list<DatabaseTask> tasks;
+		std::mutex taskLock;
+		std::condition_variable taskSignal;
 };
 
 extern DatabaseTasks g_databaseTasks;
