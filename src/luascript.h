@@ -696,7 +696,7 @@ private:
 	static int luaItemGetParent(lua_State *L);
 	static int luaItemGetTopParent(lua_State *L);
 
-	static int luaItemGetId(lua_State* L);
+	static int luaItemGetId(lua_State *L);
 	static int luaItemGetClientId(lua_State *L);
 
 	static int luaItemClone(lua_State *L);
