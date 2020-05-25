@@ -591,4 +591,7 @@ static constexpr int32_t PSTRG_MOUNTS_CURRENTMOUNT = (PSTRG_MOUNTS_RANGE_START +
 
 #define IS_IN_KEYRANGE(key, range) (key >= PSTRG_##range##_START && ((key - PSTRG_##range##_START) <= PSTRG_##range##_SIZE))
 
+// Custom Features Definition
+#define FEATURE_SHOW_BOSSES
+
 #endif

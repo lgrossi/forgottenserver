@@ -270,6 +270,10 @@ class Monster final : public Creature
 		uint32_t getConditionImmunities() const override {
 			return mType->info.conditionImmunities;
 		}
+		bool isBoss() const override
+		{
+			return mType->info.isBoss;
+		}
 		void getPathSearchParams(const Creature* creature, FindPathParams& fpp) const override;
 		bool useCacheMap() const override {
 			return !randomStepping;

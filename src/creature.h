@@ -133,6 +133,7 @@ class Creature : virtual public Thing
 		virtual const std::string& getNameDescription() const = 0;
 
 		virtual CreatureType_t getType() const = 0;
+		virtual bool isBoss() const { return false; }
 
 		virtual void setID() = 0;
 		void setRemoved() {

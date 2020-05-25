@@ -2890,6 +2890,10 @@ void ProtocolGame::AddCreature(NetworkMessage& msg, const Creature* creature, bo
 	}
 
 	msg.addByte(player->canWalkthroughEx(creature) ? 0x00 : 0x01);
+
+	#ifdef FEATURE_SHOW_BOSSES
+		msg.addByte(creature->isBoss() ? 0x01 : 0x00);
+	#endif
 }
 
 void ProtocolGame::AddPlayerStats(NetworkMessage& msg)
