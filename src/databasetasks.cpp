@@ -24,6 +24,7 @@
 
 extern Dispatcher g_dispatcher;
 
+
 void DatabaseTasks::start()
 {
 	db.connect();
@@ -33,71 +34,59 @@ void DatabaseTasks::start()
 void DatabaseTasks::threadMain()
 {
 	std::unique_lock<std::mutex> taskLockUnique(taskLock, std::defer_lock);
-	while (getState() != THREAD_STATE_TERMINATED)
-	{
+	while (getState() != THREAD_STATE_TERMINATED) {
 		taskLockUnique.lock();
-		if (tasks.empty())
-		{
+		if (tasks.empty()) {
 			taskSignal.wait(taskLockUnique);
 		}
 
-		if (!tasks.empty())
-		{
+		if (!tasks.empty()) {
 			DatabaseTask task = std::move(tasks.front());
 			tasks.pop_front();
 			taskLockUnique.unlock();
 			runTask(task);
-		}
-		else
-		{
+		} else {
 			taskLockUnique.unlock();
 		}
 	}
 }
 
-void DatabaseTasks::addTask(std::string query, std::function<void(DBResult_ptr, bool)> callback /* = nullptr*/, bool store /* = false*/)
+void DatabaseTasks::addTask(std::string query, std::function<void(DBResult_ptr, bool)> callback/* = nullptr*/, bool store/* = false*/)
 {
 	bool signal = false;
 	taskLock.lock();
-	if (getState() == THREAD_STATE_RUNNING)
-	{
+	if (getState() == THREAD_STATE_RUNNING) {
 		signal = tasks.empty();
 		tasks.emplace_back(std::move(query), std::move(callback), store);
 	}
 	taskLock.unlock();
 
-	if (signal)
-	{
+	if (signal) {
 		taskSignal.notify_one();
 	}
 }
 
-void DatabaseTasks::runTask(const DatabaseTask &task)
+void DatabaseTasks::runTask(const DatabaseTask& task)
 {
 	bool success;
 	DBResult_ptr result;
-	if (task.store)
-	{
+	if (task.store) {
 		result = db.storeQuery(task.query);
 		success = true;
-	}
-	else
-	{
+	} else {
 		result = nullptr;
 		success = db.executeQuery(task.query);
 	}
 
-	if (task.callback)
-	{
+	if (task.callback) {
 		g_dispatcher.addTask(createTask(std::bind(task.callback, result, success)));
 	}
 }
 
 void DatabaseTasks::flush()
 {
-	std::unique_lock<std::mutex> guard{taskLock};
-	while (!tasks.empty())
-	{
+	std::unique_lock<std::mutex> guard{ taskLock };
+	while (!tasks.empty()) {
 		auto task = std::move(tasks.front());
 		tasks.pop_front();
 		guard.unlock();
