@@ -6510,7 +6510,7 @@ int LuaScriptInterface::luaItemGetId(lua_State *L)
 	return 1;
 }
 
-int LuaScriptInterface::luaItemGetId(lua_State *L)
+int LuaScriptInterface::luaItemGetClientId(lua_State *L)
 {
 	// item:getId()
 	Item *item = getUserdata<Item>(L, 1);
