@@ -139,7 +139,7 @@ void Condition::serialize(PropWriteStream& propWriteStream)
 
 	propWriteStream.write<uint8_t>(CONDITIONATTR_SUBID);
 	propWriteStream.write<uint32_t>(subId);
-
+	
 	propWriteStream.write<uint8_t>(CONDITIONATTR_ISAGGRESSIVE);
 	propWriteStream.write<uint8_t>(aggressive);
 }
@@ -1122,7 +1122,6 @@ bool ConditionDamage::startCondition(Creature* creature)
 	}
 
 	if (!delayed) {
-		int32_t damage;
 		// delayed condition does no initial damage
 		if (!doDamage(creature, initDamage)) {
 			return false;
@@ -1132,7 +1131,7 @@ bool ConditionDamage::startCondition(Creature* creature)
 	if (!init()) {
 		return false;
 	}
-
+	
 	return true;
 }
 
@@ -1218,6 +1217,7 @@ bool ConditionDamage::doDamage(Creature* creature, int32_t healthChange)
 	if (g_game.combatBlockHit(damage, attacker, creature, false, false, field)) {
 		return false;
 	}
+
 	return g_game.combatChangeHealth(attacker, creature, damage);
 }
 
